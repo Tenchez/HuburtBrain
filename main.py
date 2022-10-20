@@ -11,7 +11,6 @@ import views
 from modals import CreateModal
 from discord_const import client
 from helper import cleanUp, announceEvent
-from keep_alive import keep_alive
 from replit import db
 from discord.ext import tasks
 
@@ -171,7 +170,6 @@ async def on_message(message):
 
 
 my_secret = os.environ['DISCORD_BOT_SECRET']
-keep_alive()
 try:
     client.run(my_secret)
 except:
