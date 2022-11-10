@@ -81,11 +81,14 @@ class Event(Model):
             print(f"Error editing event {e}")
 
     async def getAttendees(self):
-        going = []
-        for id in str(self.going).split(","):
-            user = await api.bot.get_or_fetch_user(id)
-            going.append(user.name)
-        return str.join(",", going)
+        g = []
+        if self.going and self.going != "None":
+            for id in str(self.going).split(","):
+                user = await api.bot.fetch_user(id)
+                print(user)
+                g.append(user.name)
+            return str.join(",", g)
+        return None
 
     async def announce(self):
         if not self.announced:
