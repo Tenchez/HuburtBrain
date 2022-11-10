@@ -61,15 +61,16 @@ class Event(Model):
     async def refresh(self, interaction = None, msg=None):
         try:
             self.save()
+            attendees = await self.getAttendees()
             if interaction is None:
                 view = EventView(self)
-                await self.eventMessage.edit(content="", view=view, embed=EventEmbed(self))
+                await self.eventMessage.edit(content="", view=view, embed=EventEmbed(self,attendees))
             else:
                 if msg:
-                    await msg.edit(content="", view=EventView(self), embed=EventEmbed(self))
+                    await msg.edit(content="", view=EventView(self), embed=EventEmbed(self,attendees))
                     await interaction.response.defer()
                 else:
-                    await interaction.response.edit_message(content="", view=EventView(self), embed=EventEmbed(self))
+                    await interaction.response.edit_message(content="", view=EventView(self), embed=EventEmbed(self,attendees))
         except Exception as e:
             print(f"Error refreshing event {e}")
 
@@ -78,6 +79,13 @@ class Event(Model):
             await interaction.response.send_modal(EventModal(self, update=True))
         except Exception as e:
             print(f"Error editing event {e}")
+
+    async def getAttendees(self):
+        going = []
+        for id in str(self.going).split(","):
+            user = await api.bot.get_or_fetch_user(id)
+            going.append(user.name)
+        return str.join(",", going)
 
     async def announce(self):
         if not self.announced:

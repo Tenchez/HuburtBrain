@@ -1,8 +1,9 @@
 from discord import Embed
 
+from bot import api
 
 class EventEmbed(Embed):
-    def __init__(self, event ):
+    def __init__(self, event, attendees):
         super().__init__()
         self.title = event.name
         if event.description:
@@ -13,7 +14,7 @@ class EventEmbed(Embed):
             self.add_field(name="When", value=event.when, inline=True)
         self.add_field(name="Date", value=event.date, inline=True)
         sum = 0 if str(event.going) == "None" else len(str(event.going).split(','))
-        self.add_field(name=f"Attendees ({sum})", value=event.going, inline=False)
+        self.add_field(name=f"Attendees ({sum})", value=attendees, inline=False)
         self.set_image(url="https://i.imgur.com/OdwAGeL.png")
         self.set_footer(text=f"Created by: {str(event.createdBy).rsplit('#')[0]}")
         self.color=event.color
