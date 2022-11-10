@@ -10,6 +10,7 @@ from db.guilds import Guilds
 from ui.eventEmbed import EventEmbed
 from ui.eventModal import EventModal
 from ui.eventView import EventView
+from ui.viewType import ViewType
 
 db = SqliteDatabase('db/data/events.db')
 
@@ -39,7 +40,7 @@ class Event(Model):
         query = Guilds.get_by_id(interaction.guild.id).channel
         channel = api.bot.get_channel(query)
         message = await api.message(channel, "@everyone")
-        view = Views.create(guild=interaction.guild.id, channel=channel.id, message=message.id)
+        view = Views.create(guild=interaction.guild.id, type=ViewType.CREATE_NEW_EVENT.value, channel=channel.id, message=message.id)
         r = lambda: random.randint(0, 255)
         self.id = view.id
         self.channel = channel.id
@@ -47,15 +48,15 @@ class Event(Model):
         self.announced = 0
         self.createdBy = interaction.user
         self.color = Color.from_rgb(r(), r(), r())
-        self.event = Event.create(id=self.id, name=self.name, description=self.description, when=self.when,
-                                  where=self.where, date=self.date, channel=self.channel, message=self.message,
-                                  going=self.going, notGoing=self.notGoing, otherAttendees=self.otherAttendees,
-                                  announced=self.announced, createdBy=self.createdBy,
-                                  color=Color.from_rgb(r(), r(), r()))
-        self.eventMessage = message
         thread = await message.create_thread(name=self.name)
         await thread.send(content="This thread will self-destruct the day after the event.")
         self.announced_message = thread.id
+        self.event = Event.create(id=self.id, name=self.name, description=self.description, when=self.when,
+                                  where=self.where, date=self.date, channel=self.channel, message=self.message,
+                                  going=self.going, notGoing=self.notGoing, otherAttendees=self.otherAttendees,
+                                  announced=self.announced, createdBy=self.createdBy, announced_message=self.announced_message, thread=self.announced_message,
+                                  color=Color.from_rgb(r(), r(), r()))
+        self.eventMessage = message
         return await self.refresh(interaction, msg=message)
 
     async def refresh(self, interaction = None, msg=None):

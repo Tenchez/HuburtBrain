@@ -26,5 +26,6 @@ class EventManagerView(View):
             message = await channel.send(content="Click the button below to create a new event!",
                                       view=EventManagerView(), embed=None)
             view = Views.create(guild=channel.guild.id, type=ViewType.CREATE_NEW_EVENT.value, channel=channel.id, message=message.id)
+            return message
         else:
             print(f"Error 10 cannot build create event manager")

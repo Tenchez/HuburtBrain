@@ -69,12 +69,10 @@ class Events(commands.Cog):
                 await channel.set_permissions(guild.default_role, send_messages=False)
             except Exception as e:
                 print(f"Error 9 {e}")
-
-            print(f"Error 3 {e}")
         finally:
             print(f"Found channel")
         try:
-            await EventManagerView.build()
+            message = await EventManagerView.build(channel=channel)
             view = Views.create(guild=guild.id, type=ViewType.CREATE_NEW_EVENT.value, channel=channel.id,
                                 message=message.id)
         except Exception as e:
