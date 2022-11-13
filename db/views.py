@@ -8,7 +8,7 @@ class Views(Model):
     guild = IntegerField()
     type = IntegerField()
     channel = IntegerField()
-    message = IntegerField()
+    message = IntegerField(unique=True)
 
     class Meta:
         database = db

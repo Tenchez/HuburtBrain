@@ -40,7 +40,7 @@ class Event(Model):
         query = Guilds.get_by_id(interaction.guild.id).channel
         channel = api.bot.get_channel(query)
         message = await api.message(channel, "@everyone")
-        view = Views.create(guild=interaction.guild.id, type=ViewType.CREATE_NEW_EVENT.value, channel=channel.id, message=message.id)
+        view = Views.create(guild=interaction.guild.id, type=ViewType.EVENT.value, channel=channel.id, message=message.id)
         r = lambda: random.randint(0, 255)
         self.id = view.id
         self.channel = channel.id
