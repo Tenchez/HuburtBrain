@@ -46,6 +46,7 @@ async def deleteMessage(msg):
 async def setupChannel( guild):
 
     query = Guilds.get_or_none(Guilds.guild == guild.id)
+    channel = None
     if query is not None:
         channel = bot.get_channel(query.channel)
         if channel is None:
