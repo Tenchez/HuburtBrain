@@ -46,6 +46,7 @@ class Event(Model):
         self.channel = channel.id
         self.message = message.id
         self.announced = 0
+        self.going = interaction.user.id
         self.createdBy = interaction.user
         self.color = Color.from_rgb(r(), r(), r())
         thread = await message.create_thread(name=self.name)
@@ -57,21 +58,31 @@ class Event(Model):
                                   announced=self.announced, createdBy=self.createdBy, announced_message=self.announced_message, thread=self.announced_message,
                                   color=Color.from_rgb(r(), r(), r()))
         self.eventMessage = message
-        return await self.refresh(interaction, msg=message)
+        return await self.refresh(interaction)
 
-    async def refresh(self, interaction = None, msg=None):
+    async def refresh(self, interaction = None, create=False):
         try:
             self.save()
             attendees = await self.getAttendees()
+            view = EventView(self)
+
             if interaction is None:
-                view = EventView(self)
-                await self.eventMessage.edit(content="", view=view, embed=EventEmbed(self,attendees))
-            else:
-                if msg:
-                    await msg.edit(content="", view=EventView(self), embed=EventEmbed(self,attendees))
-                    await interaction.response.defer()
-                else:
-                    await interaction.response.edit_message(content="", view=EventView(self), embed=EventEmbed(self,attendees))
+                if create:
+                    channel = api.bot.get_channel(self.channel)
+                    self.eventMessage = await api.message(channel, "@everyone")
+                    self.message = self.eventMessage.id
+                    thread = await self.eventMessage.create_thread(name=self.name)
+                    await thread.send(content="This thread will self-destruct the day after the event.")
+                    self.announced_message = thread.id
+                    self.save()
+                    v = Views.get_by_id(self.id)
+                    v.message = self.eventMessage.id
+                    v.save()
+
+            await self.eventMessage.edit(content="", view=view, embed=EventEmbed(self, attendees))
+            if interaction:
+                await interaction.response.defer()
+
         except Exception as e:
             print(f"Error refreshing event {e}")
 
