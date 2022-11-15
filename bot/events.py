@@ -24,7 +24,7 @@ class Events(commands.Cog):
             channel = await api.setupChannel(guild)
             if channel is None:
                 print("Error 11")
-                sys.exit("Error 11")
+                return
             createMessage = await api.setupCreateEvent(guild,channel)
             await api.setupEvents(guild,channel)
 

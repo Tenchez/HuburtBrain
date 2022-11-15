@@ -59,4 +59,4 @@ class EventView(View):
                        disabled=False)
     async def delete(self, button: Button, interaction: discord.Interaction):
         self.disable_all_items()
-        await self.event.remove()
+        await self.event.deleteEvent(interaction)

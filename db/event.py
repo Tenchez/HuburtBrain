@@ -7,6 +7,7 @@ from peewee import *
 from bot import api
 from db.views import Views
 from db.guilds import Guilds
+from ui.eventDeleteModal import EventDeleteModal
 from ui.eventEmbed import EventEmbed
 from ui.eventModal import EventModal
 from ui.eventView import EventView
@@ -99,7 +100,7 @@ class Event(Model):
                 user = await api.bot.fetch_user(id)
                 print(user)
                 g.append(user.name)
-            return str.join(",", g)
+            return str.join(", ", g)
         return None
 
     async def announce(self):
@@ -118,6 +119,11 @@ class Event(Model):
                 self.announced = True
                 self.save()
 
+    async def deleteEvent(self, interaction):
+        try:
+            await interaction.response.send_modal(EventDeleteModal(self))
+        except Exception as e:
+            print(f"Error deleting event {e}")
 
     async def remove(self):
         print(f"Removing '{self.name}'")
