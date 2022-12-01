@@ -1,5 +1,6 @@
 import discord
 from discord.ui import View, Button
+from bot import api
 
 
 class EventView(View):
@@ -23,6 +24,11 @@ class EventView(View):
         going.append(str(interaction.user.id))
         self.event.going = str.join(", ", going)
         await self.event.refresh(interaction)
+        try:
+            print(f"adding {interaction.user.name} to thread for {self.event.name}")
+            await api.bot.get_channel(self.event.thread).add_user(interaction.user)
+        except Exception as e:
+            print(f"unable to add {interaction.user.name} to thread: {e}")
 
     @discord.ui.button(label="✖ Not Going",
                        custom_id="notAttending",
@@ -44,6 +50,11 @@ class EventView(View):
         if not self.event.going:
             self.event.going = "None"
         await self.event.refresh(interaction)
+        try:
+            print(f"removing {interaction.user.name} from thread for {self.event.name}")
+            await api.bot.get_channel(self.event.thread).remove_user(interaction.user)
+        except Exception as e:
+            print(f"unable to remove {interaction.user.name} from thread: {e}")
 
     @discord.ui.button(label="📝 Edit",
                        custom_id="edit",
